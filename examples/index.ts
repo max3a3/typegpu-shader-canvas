@@ -1,18 +1,33 @@
-import { highlight } from 'sugar-high'
+import { highlight } from 'sugar-high';
 
-import { runExample as runGrid } from './grid'
-import gridSource from './grid.ts?raw'
-import { runExample as runLookAt } from './look-at'
-import lookAtSource from './look-at.ts?raw'
-import { runExample as runRgbWaves } from './rgb-waves'
-import rgbWavesSource from './rgb-waves.ts?raw'
 
-const examples: Record<string, { run(): { dispose(): void }; source: string }> =
+
+import { gradient as gradientShader, initShader as initGradient } from './gradient';
+import gradientSource from './gradient.ts?raw';
+import { runExample as runGrid } from './grid';
+import gridSource from './grid.ts?raw';
+import { runExample as runLookAt } from './look-at';
+import lookAtSource from './look-at.ts?raw';
+import { runExample as runRgbWaves } from './rgb-waves';
+import rgbWavesSource from './rgb-waves.ts?raw';
+import { getTypeGpuRoot } from '../src/typegpu-shader-canvas'
+
+
+
+
+const examples: Record<
+  string,
   {
-    'rgb-waves': { run: runRgbWaves, source: rgbWavesSource },
-    'look-at': { run: runLookAt, source: lookAtSource },
-    grid: { run: runGrid, source: gridSource },
+    run(): { dispose(): void }
+    source: string
+    init?: (root: TgpuRoot) => null
   }
+> = {
+  'rgb-waves': { run: runRgbWaves, source: rgbWavesSource },
+  'look-at': { run: runLookAt, source: lookAtSource },
+  grid: { run: runGrid, source: gridSource },
+  gradient: { run: gradientShader, source: gridSource, init: initGradient },
+}
 
 const codeEl = document.getElementById('code')!
 const tabsEl = document.getElementById('tabs')!
@@ -24,6 +39,8 @@ function activate(name: string) {
 
   const example = examples[name]
   if (!example) return
+  if (example.init)
+    example.init(getTypeGpuRoot())
 
   current = example.run()
   codeEl.innerHTML = highlight(

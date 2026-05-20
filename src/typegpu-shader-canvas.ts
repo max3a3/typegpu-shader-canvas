@@ -1,4 +1,4 @@
-import tgpu, { type TgpuBufferReadonly } from 'typegpu'
+import tgpu, { type TgpuBufferReadonly,type TgpuRoot } from 'typegpu'
 import { fullScreenTriangle } from 'typegpu/common'
 import { type Infer, type v4f, vec2f } from 'typegpu/data'
 
@@ -10,7 +10,7 @@ import { trackMouse } from './mouse'
 import { ProvidedUniforms } from './provided-uniforms'
 import { createRenderLoop } from './render-loop'
 
-const root = await tgpu.init()
+const root:TgpuRoot = await tgpu.init()
 const presentationFormat = navigator.gpu.getPreferredCanvasFormat()
 
 export function createShaderCanvas(
@@ -123,4 +123,8 @@ function createProvidedUniformsBuffer(canvas: HTMLCanvasElement) {
   })
 
   return providedUniformsBuffer
+}
+
+export function getTypeGpuRoot() {
+  return root
 }
